@@ -4,6 +4,8 @@ spring :
     username : user
     password : user
     driver-class-name : org.postgresql.Driver
+  security :
+    secret-key : secretkey
 
   liquibase :
     change-log : classpath:liquibase/changelog-master.xml

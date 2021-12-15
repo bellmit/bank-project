@@ -22,7 +22,12 @@ dependencies {
   // From Spring BOM
   implementation "org.springframework.boot:spring-boot-starter-web"
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+  //Security
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'io.jsonwebtoken:jjwt'
+  
   // Hibernate
   implementation 'org.hibernate:hibernate-core'
 
