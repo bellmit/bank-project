@@ -14,9 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    //TODO fix source
     @Value("${spring.security.secret-key}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -32,7 +31,7 @@ public class JwtUtil {
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -50,7 +49,7 @@ public class JwtUtil {
             .setSubject(subject)
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-            .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+            .signWith(SignatureAlgorithm.HS512, secretKey)
             .compact();
     }
 

@@ -24,14 +24,12 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(
-        @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUserEmail(),
-                authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect email or password", e);
-        }
+        @RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException {
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            authenticationRequest.getUserEmail(),
+            authenticationRequest.getPassword()));
+
         UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getUserEmail());
 
         String jwt = jwtUtil.generateToken(userDetails);

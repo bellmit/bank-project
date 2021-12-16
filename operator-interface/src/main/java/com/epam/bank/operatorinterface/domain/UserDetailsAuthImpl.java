@@ -1,11 +1,11 @@
 package com.epam.bank.operatorinterface.domain;
 
 import com.epam.bank.operatorinterface.entity.User;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class UserDetailsAuthImpl extends User implements UserDetails {

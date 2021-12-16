@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 
-    //TODO fix property source
     @Bean
     @ConfigurationProperties("spring.datasource")
     public DataSource dataSource() {

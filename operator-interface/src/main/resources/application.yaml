@@ -1,9 +1,10 @@
 spring :
   datasource :
-    url : jdbc:postgresql://localhost:5432/bank
+    jdbc-url : jdbc:postgresql://localhost:5432/bank
     username : user
     password : user
     driver-class-name : org.postgresql.Driver
+
   security :
     secret-key : secretkey
 
