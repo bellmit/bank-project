@@ -1,5 +1,6 @@
 package com.epam.bank.operatorinterface.service;
 
+import com.epam.bank.operatorinterface.domain.UserDetailsAuthImpl;
 import com.epam.bank.operatorinterface.entity.Role;
 import com.epam.bank.operatorinterface.entity.User;
 import com.epam.bank.operatorinterface.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -66,5 +69,35 @@ class UserServiceTest {
         Optional<User> optionalUser = userServiceMock.getUserByEmail(userEmail);
 
         Assertions.assertTrue(!optionalUser.isPresent());
+    }
+
+    @Test
+    public void loadUserByUsernameShouldReturnUserDetailsIfEmailIsCorrect() {
+        String userEmail = userEntity.getEmail();
+        Mockito
+            .when(userRepositoryMock.getUserByEmail(userEmail))
+            .thenReturn(Optional.of(userEntity));
+
+
+        UserDetails testUserDetails = new UserDetailsAuthImpl(userEntity);
+        UserDetails result = userServiceMock.loadUserByUsername(userEmail);
+
+        Assertions.assertEquals(testUserDetails.getUsername(), result.getUsername());
+    }
+
+    @Test
+    public void loadUseByUsernameShouldThrowsExceptionIfEmailIsNotCorrect() {
+        String userEmail = RandomStringUtils.random(4);
+        Mockito
+            .when(userRepositoryMock.getUserByEmail(userEmail))
+            .thenReturn(Optional.empty());
+
+        UsernameNotFoundException notFoundException = Assertions.assertThrows(
+            UsernameNotFoundException.class,
+            () -> userServiceMock.loadUserByUsername(userEmail));
+
+        Assertions.assertEquals(
+            String.format("User with Email %s not found", userEmail),
+            notFoundException.getMessage());
     }
 }
