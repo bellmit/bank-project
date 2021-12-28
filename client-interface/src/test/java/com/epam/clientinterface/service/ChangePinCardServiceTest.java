@@ -5,11 +5,12 @@ import com.epam.clientinterface.domain.exception.CardNotFoundException;
 import com.epam.clientinterface.domain.exception.ChangePinException;
 import com.epam.clientinterface.entity.Account;
 import com.epam.clientinterface.entity.Card;
-import com.epam.clientinterface.entity.CardPlan;
 import com.epam.clientinterface.entity.User;
+import com.epam.clientinterface.enumerated.AccountPlan;
+import com.epam.clientinterface.enumerated.AccountType;
+import com.epam.clientinterface.enumerated.CardPlan;
 import com.epam.clientinterface.repository.AccountRepository;
 import com.epam.clientinterface.repository.CardRepository;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -41,7 +42,8 @@ class ChangePinCardServiceTest {
     public void setUp() {
         changePinRequest = new ChangePinRequest(RandomUtils.nextLong(), "1234");
         testAccount = new Account(RandomUtils.nextLong(), RandomStringUtils.random(10), true,
-            Account.Plan.BASE, RandomUtils.nextDouble(), new User(), new ArrayList<>(), LocalDateTime.now());
+            AccountPlan.BASE, RandomUtils.nextDouble(), new User(), new ArrayList<>(), ZonedDateTime.now(),
+            AccountType.DEBIT, null, null, new ArrayList<>());
         cardService = new CardServiceImpl(cardRepositoryMock, accountRepositoryMock);
     }
 

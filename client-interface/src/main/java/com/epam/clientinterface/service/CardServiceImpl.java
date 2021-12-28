@@ -1,12 +1,15 @@
 package com.epam.clientinterface.service;
 
+import static com.epam.clientinterface.service.util.RandomGenerate.generateCardNumber;
+import static com.epam.clientinterface.service.util.RandomGenerate.generatePinCode;
+
 import com.epam.clientinterface.controller.dto.request.ChangePinRequest;
 import com.epam.clientinterface.domain.exception.AccountNotFoundException;
 import com.epam.clientinterface.domain.exception.CardNotFoundException;
 import com.epam.clientinterface.domain.exception.ChangePinException;
 import com.epam.clientinterface.entity.Account;
 import com.epam.clientinterface.entity.Card;
-import com.epam.clientinterface.entity.CardPlan;
+import com.epam.clientinterface.enumerated.CardPlan;
 import com.epam.clientinterface.repository.AccountRepository;
 import com.epam.clientinterface.repository.CardRepository;
 import com.epam.clientinterface.service.util.DomainLogicChecker;
@@ -58,17 +61,15 @@ public class CardServiceImpl implements CardService {
         Account account = accountRepository.findAccountByIdWithUser(accountId, userId)
             .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        if (account.getUser().getId() != userId) {
-            throw new AccountNotFoundException(accountId);
-        }
         DomainLogicChecker.assertAccountIsNotClosed(account);
+        DomainLogicChecker.assertAccountIsSuitableForCard(account);
 
         String pinCode = generatePinCode();
         String number;
         // TODO: a potentially infinite loop
         do {
             number = generateCardNumber();
-        } while (cardRepository.findCardByNumber(number).isPresent());
+        } while (cardRepository.findByNumber(number).isPresent());
 
         Card card = new Card(account, number, pinCode, plan, false, ZonedDateTime.now().plusYears(3));
         return cardRepository.save(card);

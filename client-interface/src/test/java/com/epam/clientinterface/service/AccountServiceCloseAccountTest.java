@@ -1,6 +1,6 @@
 package com.epam.clientinterface.service;
 
-import static com.epam.clientinterface.util.TestDataFactory.getAccountBelongsToUser;
+import static com.epam.clientinterface.util.TestDataFactory.getDebitAccountBelongsToUser;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +32,7 @@ class AccountServiceCloseAccountTest {
 
     @Test
     void shouldReturnNothingIfAccountExists() {
-        var accountFixture = getAccountBelongsToUser();
+        var accountFixture = getDebitAccountBelongsToUser();
         when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
             .thenReturn(Optional.of(accountFixture));
 
@@ -49,7 +49,7 @@ class AccountServiceCloseAccountTest {
 
     @Test
     void shouldThrowAccountIsClosedIfAccountIsClosed() {
-        var accountFixture = getAccountBelongsToUser();
+        var accountFixture = getDebitAccountBelongsToUser();
         accountFixture.close();
 
         when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))

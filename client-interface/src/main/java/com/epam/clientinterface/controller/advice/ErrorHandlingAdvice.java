@@ -1,7 +1,10 @@
 package com.epam.clientinterface.controller.advice;
 
 import com.epam.clientinterface.controller.dto.response.ErrorResponse;
+import com.epam.clientinterface.domain.exception.AccountIsClosedException;
+import com.epam.clientinterface.domain.exception.AccountIsNotSupposedForCard;
 import com.epam.clientinterface.domain.exception.AccountIsNotSupposedForExternalTransferException;
+import com.epam.clientinterface.domain.exception.AccountIsNotSupposedForWithdraw;
 import com.epam.clientinterface.domain.exception.AccountNotFoundException;
 import com.epam.clientinterface.domain.exception.CardNotFoundException;
 import com.epam.clientinterface.domain.exception.ChangePinException;
@@ -9,6 +12,7 @@ import com.epam.clientinterface.domain.exception.CurrencyNotFoundException;
 import com.epam.clientinterface.domain.exception.IncorrectPinException;
 import com.epam.clientinterface.domain.exception.NotEnoughMoneyException;
 import com.epam.clientinterface.domain.exception.UserAlreadyExistException;
+import com.epam.clientinterface.domain.exception.UserNotFoundException;
 import com.epam.clientinterface.domain.exception.UsernameAlreadyTakenException;
 import java.util.HashMap;
 import javax.validation.ConstraintViolationException;
@@ -155,6 +159,41 @@ public class ErrorHandlingAdvice extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex, WebRequest request) {
+        return handleExceptionInternal(
+            ex,
+            new ErrorResponse("userNotFound", HttpStatus.NOT_FOUND),
+            new HttpHeaders(),
+            HttpStatus.NOT_FOUND,
+            request
+        );
+    }
+
+    @ExceptionHandler(AccountIsNotSupposedForWithdraw.class)
+    public ResponseEntity<Object> handleAccountIsNotSupposedForWithdraw(AccountIsNotSupposedForWithdraw ex,
+                                                                        WebRequest request) {
+        return handleExceptionInternal(
+            ex,
+            new ErrorResponse("accountIsNotSupposedForWithdraw", HttpStatus.BAD_REQUEST),
+            new HttpHeaders(),
+            HttpStatus.BAD_REQUEST,
+            request
+        );
+    }
+
+    @ExceptionHandler(AccountIsNotSupposedForCard.class)
+    public ResponseEntity<Object> handleAccountIsNotSupposedForCard(AccountIsNotSupposedForCard ex,
+                                                                    WebRequest request) {
+        return handleExceptionInternal(
+            ex,
+            new ErrorResponse("accountIsNotSupposedForCard", HttpStatus.BAD_REQUEST),
+            new HttpHeaders(),
+            HttpStatus.BAD_REQUEST,
+            request
+        );
+    }
+
     @ExceptionHandler(CurrencyNotFoundException.class)
     public ResponseEntity<Object> handleCurrencyNotFoundException(CurrencyNotFoundException ex,
                                                                   WebRequest request) {
@@ -163,6 +202,17 @@ public class ErrorHandlingAdvice extends ResponseEntityExceptionHandler {
             new ErrorResponse("currencyNotFound", HttpStatus.NOT_FOUND),
             new HttpHeaders(),
             HttpStatus.NOT_FOUND,
+            request
+        );
+    }
+
+    @ExceptionHandler(AccountIsClosedException.class)
+    public ResponseEntity<Object> handleAccountIsClosedException(AccountIsClosedException ex, WebRequest request) {
+        return handleExceptionInternal(
+            ex,
+            new ErrorResponse("accountIsClosed", HttpStatus.BAD_REQUEST),
+            new HttpHeaders(),
+            HttpStatus.BAD_REQUEST,
             request
         );
     }

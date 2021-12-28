@@ -10,10 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.epam.clientinterface.domain.exception.AccountIsNotSupposedForCard;
 import com.epam.clientinterface.domain.exception.AccountNotFoundException;
 import com.epam.clientinterface.entity.Card;
-import com.epam.clientinterface.entity.CardPlan;
-import org.junit.jupiter.api.Disabled;
+import com.epam.clientinterface.enumerated.CardPlan;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,11 +41,8 @@ public class CardControllerNewCardTest extends AbstractControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {
         "{\"plan\":null}",
-        "{\"type\":\"BASE\"}",
         "{}"
     })
-    @Disabled
-    // TEST DOES NOT WORK
     public void shouldReturnValidationErrorResponseIfRequestIsIncorrect(String requestBody) throws Exception {
         send(MediaType.APPLICATION_JSON, requestBody, HttpMethod.POST, String.format(uri, 1))
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -62,6 +59,7 @@ public class CardControllerNewCardTest extends AbstractControllerTest {
     @ValueSource(strings = {
         "{\"plan\":\"BAS\"}",
         "{\"plan\":\"BASE\"",
+        "{\"type\":\"BASE\"}",
         ""
     })
     public void shouldReturnBadRequestIfRequestIsInvalid(String requestBody) throws Exception {
@@ -80,9 +78,18 @@ public class CardControllerNewCardTest extends AbstractControllerTest {
     }
 
     @Test
+    public void shouldReturnBadRequestIfServiceThrowsAccountIsNotSupposedForCard() throws Exception {
+        Mockito.doThrow(AccountIsNotSupposedForCard.class)
+            .when(cardServiceMock)
+            .releaseCard(anyLong(), any(CardPlan.class), anyLong());
+
+        send(MediaType.APPLICATION_JSON, requestBody, HttpMethod.POST, String.format(uri, 2))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void shouldReturnUnsupportedMediaTypeIfContentTypeIsNotJson() throws Exception {
         send(MediaType.TEXT_HTML, "", HttpMethod.POST, String.format(uri, 1))
             .andExpect(status().isUnsupportedMediaType());
     }
-
 }

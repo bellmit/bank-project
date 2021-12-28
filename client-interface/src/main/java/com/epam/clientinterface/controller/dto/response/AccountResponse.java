@@ -1,6 +1,6 @@
 package com.epam.clientinterface.controller.dto.response;
 
-import com.epam.clientinterface.entity.Account;
+import com.epam.clientinterface.enumerated.AccountPlan;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,7 +12,7 @@ public class AccountResponse {
 
     private final boolean isDefault;
 
-    private final Account.Plan plan;
+    private final AccountPlan plan;
 
     private final double amount;
 }

@@ -1,6 +1,8 @@
 package com.epam.clientinterface.entity;
 
-import java.time.LocalDateTime;
+import com.epam.clientinterface.enumerated.AccountPlan;
+import com.epam.clientinterface.enumerated.AccountType;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -44,7 +46,7 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "plan", nullable = false)
-    private Plan plan;
+    private AccountPlan plan;
 
     @Column(name = "amount", nullable = false)
     private double amount;
@@ -56,27 +58,54 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 
-    @Column(name = "closed_at", nullable = false)
-    private LocalDateTime closedAt;
+    @Column(name = "closed_at")
+    private ZonedDateTime closedAt;
 
-    public enum Plan {
-        BASE
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private AccountType type;
 
-    public Account(@NonNull User user, @NonNull String number, boolean isDefault, @NonNull Plan plan, double amount) {
+    @Column(name = "start_invest")
+    private ZonedDateTime startInvest;
+
+    @Column(name = "end_invest")
+    private ZonedDateTime endInvest;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IrTransaction> irTransactions = new ArrayList<>();
+
+    public Account(@NonNull User user, @NonNull String number, boolean isDefault, @NonNull AccountPlan plan,
+                   double amount) {
         this.user = user;
         this.number = number;
         this.isDefault = isDefault;
         this.plan = plan;
         this.amount = amount;
+        this.type = AccountType.DEBIT;
+    }
+
+    public Account(@NonNull User user, @NonNull String number, @NonNull AccountPlan plan,
+                   double amount, AccountType type, ZonedDateTime startInvest, ZonedDateTime endInvest) {
+        this.user = user;
+        this.number = number;
+        this.isDefault = false;
+        this.plan = plan;
+        this.amount = amount;
+        this.type = type;
+        this.startInvest = startInvest;
+        this.endInvest = endInvest;
     }
 
     public void close() {
-        this.closedAt = LocalDateTime.now();
+        this.closedAt = ZonedDateTime.now();
     }
 
     public boolean isClosed() {
         return this.closedAt != null;
+    }
+
+    public boolean isInvest() {
+        return this.type == AccountType.INVEST;
     }
 
     public interface Factory {
@@ -87,7 +116,7 @@ public class Account {
     public static class SimpleFactory implements Factory {
         private final String number;
         private final boolean isDefault;
-        private final Plan plan;
+        private final AccountPlan plan;
         private final double amount;
 
         public Account createFor(User user) {
@@ -100,7 +129,7 @@ public class Account {
         private final String number;
 
         public Account createFor(User user) {
-            return new Account(user, this.number, true, Plan.BASE, 0.0);
+            return new Account(user, this.number, true, AccountPlan.BASE, 0.0);
         }
     }
 }

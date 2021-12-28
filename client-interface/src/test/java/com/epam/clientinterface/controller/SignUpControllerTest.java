@@ -74,8 +74,8 @@ class SignUpControllerTest {
             .thenReturn(newUser);
 
         mockMvc.perform(post(url)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(signUpUserData))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(signUpUserData))
             .andExpect(status().isCreated())
             .andReturn();
 
@@ -89,8 +89,8 @@ class SignUpControllerTest {
             .signUp(any(), any(), any(), any(), any(), any());
 
         mockMvc.perform(post(url)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(signUpUserData))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(signUpUserData))
             .andExpect(status().isBadRequest());
 
         verify(authService).signUp(any(), any(), any(), any(), any(), any());

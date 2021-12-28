@@ -195,12 +195,15 @@
       </column>
     </addColumn>
   </changeSet>
+
   <changeSet id="7" author="Dmitrii Korolev">
     <modifyDataType tableName="account" columnName="number" newDataType="varchar"/>
   </changeSet>
+
   <changeSet id="8" author="Dmitrii Korolev">
     <renameColumn tableName="card" oldColumnName="explication_date" newColumnName="expiration_date"/>
   </changeSet>
+
   <changeSet id="9" author="Dmitrii Korolev">
     <dropColumn tableName="transaction" columnName="source_account_id"/>
     <dropColumn tableName="transaction" columnName="destination_account_id"/>
@@ -217,6 +220,7 @@
       <column name="destination_is_external" type="boolean"/>
     </addColumn>
   </changeSet>
+
   <changeSet id="10" author="Dmitrii Korolev">
     <addColumn tableName="account">
       <column name="closed_at" type="timestamp"/>
@@ -224,8 +228,8 @@
   </changeSet>
 
   <changeSet id="11" author="Tatiana Naumovets">
-    <addColumn tableName="card" >
-      <column name="is_blocked" type="boolean" defaultValue="false" />
+    <addColumn tableName="card">
+      <column name="is_blocked" type="boolean" defaultValue="false"/>
     </addColumn>
   </changeSet>
 
@@ -275,7 +279,48 @@
   </changeSet>
 
   <changeSet id="15" author="Tatiana Naumovets">
-    <modifyDataType  tableName="card" columnName="expiration_date" newDataType="TIMESTAMP WITH TIME ZONE" />
+    <modifyDataType tableName="card" columnName="expiration_date" newDataType="TIMESTAMP WITH TIME ZONE"/>
+  </changeSet>
+
+  <changeSet id="16" author="Tatiana Naumovets">
+    <addColumn tableName="account">
+      <column name="type" type="varchar"/>
+    </addColumn>
+    <addColumn tableName="account">
+      <column name="start_invest" type="timestamp"/>
+    </addColumn>
+    <addColumn tableName="account">
+      <column name="end_invest" type="timestamp"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="17" author="Tatiana Naumovets">
+    <createTable tableName="ir_transaction">
+      <column name="id" type="BIGINT">
+        <constraints primaryKey="true" primaryKeyName="ir_transaction_pkey"/>
+      </column>
+      <column defaultValueComputed="0.00" name="balance" type="numeric(13, 2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="date" type="TIMESTAMP WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="account_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addForeignKeyConstraint
+      baseTableName="ir_transaction"
+      baseColumnNames="account_id"
+      constraintName="ir_transaction_account_id_fkey"
+      deferrable="false"
+      initiallyDeferred="false"
+      onDelete="CASCADE"
+      onUpdate="NO ACTION"
+      referencedColumnNames="id"
+      referencedTableName="account"
+      validate="true"/>
+    <addAutoIncrement tableName="ir_transaction" columnName="id" incrementBy="1" startWith="1"/>
   </changeSet>
 
 </databaseChangeLog>

@@ -11,10 +11,13 @@ import org.springframework.stereotype.Repository;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByNumber(String number);
 
+    Account save(Account account);
+
+    @Query(value = "SELECT a FROM Account a WHERE a.type = 'INVEST' AND a.closedAt is null")
+    List<Account> findInvestAccounts();
+
     @Query("SELECT a FROM Account a JOIN FETCH a.user WHERE a.id = ?1 AND a.user.id=?2")
     Optional<Account> findAccountByIdWithUser(long accountId, long userId);
-
-    Account save(Account account);
 
     @Query("SELECT number FROM Account WHERE user_id = ?1")
     List<String> findAccountsByUserId(Long userId);

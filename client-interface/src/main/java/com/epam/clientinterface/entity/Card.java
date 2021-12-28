@@ -1,5 +1,6 @@
 package com.epam.clientinterface.entity;
 
+import com.epam.clientinterface.enumerated.CardPlan;
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;

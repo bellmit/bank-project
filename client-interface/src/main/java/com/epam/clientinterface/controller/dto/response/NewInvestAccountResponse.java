@@ -1,6 +1,5 @@
 package com.epam.clientinterface.controller.dto.response;
 
-import com.epam.clientinterface.enumerated.CardPlan;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
@@ -13,19 +12,19 @@ import org.springframework.http.HttpStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewCardResponse {
+public class NewInvestAccountResponse {
     private int status;
     private String description;
     private String number;
-    private CardPlan plan;
-    private String expirationDate;
+    private String startInvest;
+    private String endInvest;
 
-    public NewCardResponse(HttpStatus status, String description, String number, CardPlan plan,
-                           ZonedDateTime expirationDate) {
+    public NewInvestAccountResponse(HttpStatus status, String description, String number, ZonedDateTime startInvest,
+                                    ZonedDateTime endInvest) {
         this.status = status.value();
         this.description = description;
         this.number = number;
-        this.plan = plan;
-        this.expirationDate = DateTimeFormatter.ISO_DATE_TIME.format(expirationDate);
+        this.startInvest = DateTimeFormatter.ISO_DATE_TIME.format(startInvest);
+        this.endInvest = DateTimeFormatter.ISO_DATE_TIME.format(endInvest);
     }
 }

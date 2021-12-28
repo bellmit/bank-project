@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
-    Optional<Card> findCardByNumber(String number);
+    Optional<Card> findByNumber(String number);
 
     @Modifying
     @Query("UPDATE Card SET pinCounter = 0")

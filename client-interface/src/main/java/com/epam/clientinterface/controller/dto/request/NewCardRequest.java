@@ -1,6 +1,6 @@
 package com.epam.clientinterface.controller.dto.request;
 
-import com.epam.clientinterface.entity.CardPlan;
+import com.epam.clientinterface.enumerated.CardPlan;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 

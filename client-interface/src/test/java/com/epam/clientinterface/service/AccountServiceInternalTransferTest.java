@@ -1,16 +1,20 @@
 package com.epam.clientinterface.service;
 
-import static com.epam.clientinterface.util.TestDataFactory.getAccount;
-import static com.epam.clientinterface.util.TestDataFactory.getAccountBelongsToUser;
-import static com.epam.clientinterface.util.TestDataFactory.getClosedAccountBelongsToUser;
+import static com.epam.clientinterface.util.TestDataFactory.getClosedDebitAccountBelongsToUser;
+import static com.epam.clientinterface.util.TestDataFactory.getDebitAccount;
+import static com.epam.clientinterface.util.TestDataFactory.getDebitAccountBelongsToUser;
+import static com.epam.clientinterface.util.TestDataFactory.getInvestAccountBelongsToUser;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import com.epam.clientinterface.domain.exception.AccountIsClosedException;
+import com.epam.clientinterface.domain.exception.AccountIsNotSupposedForWithdraw;
 import com.epam.clientinterface.domain.exception.AccountNotFoundException;
 import com.epam.clientinterface.domain.exception.NotEnoughMoneyException;
 import com.epam.clientinterface.repository.AccountRepository;
 import com.epam.clientinterface.repository.TransactionRepository;
+import com.epam.clientinterface.repository.UserRepository;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Assertions;
@@ -30,15 +34,19 @@ class AccountServiceInternalTransferTest {
     @Mock
     private TransactionRepository transactionRepositoryMock;
 
+    @Mock
+    private UserRepository userRepository;
+
     @BeforeEach
     public void beforeEach() {
-        this.accountService = new AccountService(this.accountRepositoryMock, this.transactionRepositoryMock);
+        this.accountService = new AccountService(this.accountRepositoryMock, this.transactionRepositoryMock,
+            this.userRepository);
     }
 
     @Test
     void shouldReturnNothingIfAccountsExistAndThereIsEnoughMoney() {
-        var sourceAccountFixture = getAccountBelongsToUser();
-        var destinationAccountFixture = getAccountBelongsToUser();
+        var sourceAccountFixture = getDebitAccountBelongsToUser();
+        var destinationAccountFixture = getDebitAccountBelongsToUser();
 
         when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
             .thenReturn(Optional.of(sourceAccountFixture))
@@ -61,7 +69,7 @@ class AccountServiceInternalTransferTest {
 
     @Test
     void shouldThrowAccountNotFoundIfTheDestinationAccountDoesNotExist() {
-        var sourceAccountFixture = getAccount();
+        var sourceAccountFixture = getDebitAccount();
 
         Assertions.assertThrows(
             AccountNotFoundException.class,
@@ -73,8 +81,8 @@ class AccountServiceInternalTransferTest {
 
     @Test
     void shouldThrowNotEnoughMoneyIfSourceAccountDoesNotHaveEnoughMoney() {
-        var sourceAccountFixture = getAccountBelongsToUser();
-        var destinationAccountFixture = getAccountBelongsToUser();
+        var sourceAccountFixture = getDebitAccountBelongsToUser();
+        var destinationAccountFixture = getDebitAccountBelongsToUser();
 
         when(this.accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
             .thenReturn(Optional.of(sourceAccountFixture))
@@ -92,8 +100,8 @@ class AccountServiceInternalTransferTest {
 
     @Test
     void shouldThrowAccountIsClosedIfSourceAccountIsClosed() {
-        var sourceAccountFixture = getClosedAccountBelongsToUser();
-        var destinationAccountFixture = getAccountBelongsToUser();
+        var sourceAccountFixture = getClosedDebitAccountBelongsToUser();
+        var destinationAccountFixture = getDebitAccountBelongsToUser();
 
         when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
             .thenReturn(Optional.of(sourceAccountFixture))
@@ -111,8 +119,8 @@ class AccountServiceInternalTransferTest {
 
     @Test
     void shouldThrowAccountIsClosedIfDestinationAccountIsClosed() {
-        var sourceAccountFixture = getAccountBelongsToUser();
-        var destinationAccountFixture = getClosedAccountBelongsToUser();
+        var sourceAccountFixture = getDebitAccountBelongsToUser();
+        var destinationAccountFixture = getClosedDebitAccountBelongsToUser();
 
         when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
             .thenReturn(Optional.of(sourceAccountFixture))
@@ -131,6 +139,25 @@ class AccountServiceInternalTransferTest {
     @Test
     void shouldThrowAccountNotFound_IfAccountDoesNotBelongToUsers() {
         Assertions.assertThrows(AccountNotFoundException.class,
-            () -> accountService.internalTransfer(getAccount().getId(), getAccount().getId(), 100, 1));
+            () -> accountService.internalTransfer(getDebitAccount().getId(), getDebitAccount().getId(),
+                100, 1));
+    }
+
+    @Test
+    public void shouldThrowAccountIsNotSupposedForWithdraw() {
+        var sourceAccountFixture = getInvestAccountBelongsToUser(ZonedDateTime.now(),
+            ZonedDateTime.now().plusYears(1));
+        var destinationAccountFixture = getDebitAccount();
+        when(accountRepositoryMock.findAccountByIdWithUser(anyLong(), anyLong()))
+            .thenReturn(Optional.of(sourceAccountFixture));
+
+        Assertions.assertThrows(
+            AccountIsNotSupposedForWithdraw.class,
+            () -> accountService.internalTransfer(
+                sourceAccountFixture.getId(), destinationAccountFixture.getId(),
+                RandomUtils.nextDouble(1000.0, 10000.0),
+                sourceAccountFixture.getUser().getId()
+            )
+        );
     }
 }

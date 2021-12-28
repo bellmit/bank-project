@@ -1,5 +1,7 @@
 package com.epam.clientinterface.entity;
 
+import com.epam.clientinterface.enumerated.TransactionOperationType;
+import com.epam.clientinterface.enumerated.TransactionState;
 import java.time.LocalDateTime;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;

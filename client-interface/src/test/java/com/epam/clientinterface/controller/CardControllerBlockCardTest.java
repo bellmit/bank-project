@@ -35,5 +35,4 @@ public class CardControllerBlockCardTest extends AbstractControllerTest {
         send(MediaType.APPLICATION_JSON, "", HttpMethod.PATCH, String.format(uri, 1))
             .andExpect(status().isNotFound());
     }
-
 }

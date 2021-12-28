@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateExchangeRatesTask {
     private final ExchangeRateRepository exchangeRateRepository;
 
-    @Scheduled(cron = "${app.task.update-exchange-rates.cron}", zone = "${app.task.update-exchange-rates.zone}")
+    @Scheduled(cron = "${app.task.update-exchange-rates.cron}", zone = "${app.task.zone}")
     public void execute() {
         this.updateExchangeRates(this.gatherExchangeRates());
     }
@@ -25,7 +25,8 @@ public class UpdateExchangeRatesTask {
     private List<javax.money.convert.ExchangeRate> gatherExchangeRates() {
         var exchangeRates = new ArrayList<javax.money.convert.ExchangeRate>();
         for (var currencyFrom : Currency.values()) {
-            var currItem = Monetary.getDefaultAmountFactory().setCurrency(currencyFrom.name()).setNumber(1).create();
+            var currItem = Monetary.getDefaultAmountFactory().setCurrency(currencyFrom.name())
+                .setNumber(1).create();
             for (var currencyTo : Currency.values()) {
                 if (currencyFrom.equals(currencyTo)) {
                     continue;
