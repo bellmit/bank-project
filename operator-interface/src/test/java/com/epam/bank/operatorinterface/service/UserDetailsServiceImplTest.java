@@ -20,13 +20,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserDetailsServiceImplTest {
 
     @Mock
     private UserRepository userRepositoryMock;
 
     @InjectMocks
-    private UserService userServiceMock;
+    private UserDetailsServiceImpl userDetailsServiceImplMock;
 
     private User userEntity;
 
@@ -54,7 +54,7 @@ class UserServiceTest {
             .when(userRepositoryMock.getUserByEmail(userEmail))
             .thenReturn(Optional.of(userEntity));
 
-        Optional<User> optionalUser = userServiceMock.getUserByEmail(userEmail);
+        Optional<User> optionalUser = userRepositoryMock.getUserByEmail(userEmail);
 
         Assertions.assertEquals(userEntity, optionalUser.get());
     }
@@ -66,7 +66,7 @@ class UserServiceTest {
             .when(userRepositoryMock.getUserByEmail(userEmail))
             .thenReturn(Optional.empty());
 
-        Optional<User> optionalUser = userServiceMock.getUserByEmail(userEmail);
+        Optional<User> optionalUser = userRepositoryMock.getUserByEmail(userEmail);
 
         Assertions.assertTrue(!optionalUser.isPresent());
     }
@@ -79,8 +79,12 @@ class UserServiceTest {
             .thenReturn(Optional.of(userEntity));
 
 
-        UserDetails testUserDetails = new UserDetailsAuthImpl(userEntity);
-        UserDetails result = userServiceMock.loadUserByUsername(userEmail);
+        UserDetails testUserDetails = new UserDetailsAuthImpl(
+            userEntity.getPassword(),
+            userEntity.getEmail(),
+            userEntity.getRoles(),
+            userEntity.isEnabled());
+        UserDetails result = userDetailsServiceImplMock.loadUserByUsername(userEmail);
 
         Assertions.assertEquals(testUserDetails.getUsername(), result.getUsername());
     }
@@ -94,7 +98,7 @@ class UserServiceTest {
 
         UsernameNotFoundException notFoundException = Assertions.assertThrows(
             UsernameNotFoundException.class,
-            () -> userServiceMock.loadUserByUsername(userEmail));
+            () -> userDetailsServiceImplMock.loadUserByUsername(userEmail));
 
         Assertions.assertEquals(
             String.format("User with Email %s not found", userEmail),

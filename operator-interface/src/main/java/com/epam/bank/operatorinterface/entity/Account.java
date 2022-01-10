@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -28,6 +29,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "account", schema = "public")
 public class Account {
     @Id
@@ -63,14 +65,6 @@ public class Account {
         BASE
     }
 
-    public Account(@NonNull User user, @NonNull String number, boolean isDefault, @NonNull Plan plan, double amount) {
-        this.user = user;
-        this.number = number;
-        this.isDefault = isDefault;
-        this.plan = plan;
-        this.amount = amount;
-    }
-
     public void close() {
         this.closedAt = LocalDateTime.now();
     }
@@ -79,28 +73,11 @@ public class Account {
         return this.closedAt != null;
     }
 
-    public interface Factory {
-        Account createFor(User user);
-    }
-
-    @AllArgsConstructor
-    public static class SimpleFactory implements Factory {
-        private final String number;
-        private final boolean isDefault;
-        private final Plan plan;
-        private final double amount;
-
-        public Account createFor(User user) {
-            return new Account(user, this.number, this.isDefault, this.plan, this.amount);
-        }
-    }
-
-    @AllArgsConstructor
-    public static class AsFirstFactory implements Factory {
-        private final String number;
-
-        public Account createFor(User user) {
-            return new Account(user, this.number, true, Plan.BASE, 0.0);
-        }
+    public Account(@NonNull User user, @NonNull String number, boolean isDefault, @NonNull Plan plan, double amount) {
+        this.user = user;
+        this.number = number;
+        this.isDefault = isDefault;
+        this.plan = plan;
+        this.amount = amount;
     }
 }

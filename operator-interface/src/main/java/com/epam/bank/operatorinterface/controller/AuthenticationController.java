@@ -2,7 +2,7 @@ package com.epam.bank.operatorinterface.controller;
 
 import com.epam.bank.operatorinterface.domain.dto.AuthenticationRequest;
 import com.epam.bank.operatorinterface.domain.dto.AuthenticationResponse;
-import com.epam.bank.operatorinterface.service.UserService;
+import com.epam.bank.operatorinterface.service.UserDetailsServiceImpl;
 import com.epam.bank.operatorinterface.util.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private AuthenticationManager authenticationManager;
-    private UserService userService;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
     private JwtUtil jwtUtil;
 
     @PostMapping("/authenticate")
@@ -30,7 +30,7 @@ public class AuthenticationController {
             authenticationRequest.getUserEmail(),
             authenticationRequest.getPassword()));
 
-        UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getUserEmail());
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(authenticationRequest.getUserEmail());
 
         String jwt = jwtUtil.generateToken(userDetails);
 

@@ -1,54 +1,52 @@
 package com.epam.bank.operatorinterface.domain;
 
-import com.epam.bank.operatorinterface.entity.User;
+import com.epam.bank.operatorinterface.entity.Role;
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@NoArgsConstructor
-public class UserDetailsAuthImpl extends User implements UserDetails {
+@Getter
+@AllArgsConstructor
+public class UserDetailsAuthImpl implements UserDetails {
 
-    public UserDetailsAuthImpl(User user) {
-        super(
-            user.getId(),
-            user.getName(),
-            user.getSurname(),
-            user.getPhoneNumber(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getPassword(),
-            user.getAccounts(),
-            user.isEnabled(),
-            user.getFailedLoginAttempts(),
-            user.getRoles());
-    }
+    private final String password;
+    private final String email;
+    private final Set<Role> roles;
+    private final boolean isEnabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.getRoles().stream()
-            .map(role -> new RolesGrantedAuthorities(role.getId(), role.getRole()))
+        return roles.stream()
+            .map(role -> new RolesGrantedAuthorities(role.getRole()))
             .collect(Collectors.toSet());
     }
 
     @Override
     public String getUsername() {
-        return super.getEmail();
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return super.isEnabled();
+        return isEnabled;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return super.isEnabled();
+        return isEnabled;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return super.isEnabled();
+        return isEnabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
     }
 }

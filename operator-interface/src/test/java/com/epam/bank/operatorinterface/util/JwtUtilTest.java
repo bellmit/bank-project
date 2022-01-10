@@ -50,7 +50,12 @@ class JwtUtilTest {
             Set.of(new Role(1L, "ROLE_ADMIN"))
         );
         testSecretKey = "testSecret";
-        testToken = generateToken(new UserDetailsAuthImpl(testUserEntity));
+        testToken = generateToken(new UserDetailsAuthImpl(
+            testUserEntity.getPassword(),
+            testUserEntity.getEmail(),
+            testUserEntity.getRoles(),
+            testUserEntity.isEnabled()
+        ));
 
         Class jwtUtilClass = testingJwtUtil.getClass();
         try {
@@ -64,7 +69,12 @@ class JwtUtilTest {
 
     @Test
     public void generateTokenShouldReturnNewToken() {
-        String result = testingJwtUtil.generateToken(new UserDetailsAuthImpl(testUserEntity));
+        String result = testingJwtUtil.generateToken(new UserDetailsAuthImpl(
+            testUserEntity.getPassword(),
+            testUserEntity.getEmail(),
+            testUserEntity.getRoles(),
+            testUserEntity.isEnabled()
+        ));
 
         Assertions.assertEquals(testToken, result);
     }
@@ -89,19 +99,33 @@ class JwtUtilTest {
     public void validateTokenShouldReturnTrueIfTokenCorrect() {
         Assertions.assertTrue(testingJwtUtil.validateToken(
             testToken,
-            new UserDetailsAuthImpl(testUserEntity)));
+            new UserDetailsAuthImpl(
+                testUserEntity.getPassword(),
+                testUserEntity.getEmail(),
+                testUserEntity.getRoles(),
+                testUserEntity.isEnabled()
+            )));
     }
 
     @Test
     public void validateTokenShouldReturnFalseIfTokenIncorrect() {
-        UserDetailsAuthImpl userWithWrongEmail = new UserDetailsAuthImpl(testUserEntity);
-        userWithWrongEmail.setEmail(RandomStringUtils.random(5));
+        UserDetailsAuthImpl userWithWrongEmail = new UserDetailsAuthImpl(
+            testUserEntity.getPassword(),
+            RandomStringUtils.random(5),
+            testUserEntity.getRoles(),
+            testUserEntity.isEnabled()
+        );
 
         String fakeToken = generateToken(userWithWrongEmail);
 
         Assertions.assertFalse(testingJwtUtil.validateToken(
             fakeToken,
-            new UserDetailsAuthImpl(testUserEntity)));
+            new UserDetailsAuthImpl(
+                testUserEntity.getPassword(),
+                testUserEntity.getEmail(),
+                testUserEntity.getRoles(),
+                testUserEntity.isEnabled()
+            )));
     }
 
     private String generateToken(UserDetails userDetails) {
