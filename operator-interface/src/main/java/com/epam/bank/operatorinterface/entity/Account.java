@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "account", schema = "public")
@@ -79,28 +81,4 @@ public class Account {
         return this.closedAt != null;
     }
 
-    public interface Factory {
-        Account createFor(User user);
-    }
-
-    @AllArgsConstructor
-    public static class SimpleFactory implements Factory {
-        private final String number;
-        private final boolean isDefault;
-        private final Plan plan;
-        private final double amount;
-
-        public Account createFor(User user) {
-            return new Account(user, this.number, this.isDefault, this.plan, this.amount);
-        }
-    }
-
-    @AllArgsConstructor
-    public static class AsFirstFactory implements Factory {
-        private final String number;
-
-        public Account createFor(User user) {
-            return new Account(user, this.number, true, Plan.BASE, 0.0);
-        }
-    }
 }

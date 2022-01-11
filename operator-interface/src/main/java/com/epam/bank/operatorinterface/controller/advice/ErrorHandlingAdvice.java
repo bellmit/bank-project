@@ -16,13 +16,13 @@ public class ErrorHandlingAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
-        ErrorResponse response = new ErrorResponse("badCredentials", HttpStatus.FORBIDDEN);
+        ErrorResponse response = new ErrorResponse("badCredentials");
         return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler
     public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
-        ErrorResponse response = new ErrorResponse("emailNotFound", HttpStatus.FORBIDDEN);
+        ErrorResponse response = new ErrorResponse("emailNotFound");
         return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 }

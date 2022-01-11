@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
-    }
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         UserDetailsAuthImpl userDetails = userRepository.getUserByEmail(userEmail)
-            .map(UserDetailsAuthImpl::new)
-            .orElseThrow(
+            .map(u -> new UserDetailsAuthImpl(
+                u.getPassword(),
+                u.getEmail(),
+                u.getRoles(),
+                u.isEnabled())
+            ).orElseThrow(
                 () -> new UsernameNotFoundException(String.format("User with Email %s not found", userEmail)));
         return userDetails;
     }

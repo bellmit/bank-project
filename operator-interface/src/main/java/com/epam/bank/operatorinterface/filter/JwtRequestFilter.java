@@ -1,6 +1,6 @@
 package com.epam.bank.operatorinterface.filter;
 
-import com.epam.bank.operatorinterface.service.UserService;
+import com.epam.bank.operatorinterface.service.UserDetailsServiceImpl;
 import com.epam.bank.operatorinterface.util.JwtUtil;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -18,24 +18,28 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @AllArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private UserService userService;
+
+    private final String authorizationHeader = "Authorization";
+    private final String bearerPrefix = "Bearer ";
+
+    private UserDetailsServiceImpl userDetailsServiceImpl;
     private JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
+        String authorizationHeader = request.getHeader(this.authorizationHeader);
 
         String jwt = null;
         String email = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+        if (authorizationHeader != null && authorizationHeader.startsWith(this.bearerPrefix)) {
+            jwt = authorizationHeader.substring(this.bearerPrefix.length());
             email = jwtUtil.extractEmail(jwt);
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(email);
+            UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(email);
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

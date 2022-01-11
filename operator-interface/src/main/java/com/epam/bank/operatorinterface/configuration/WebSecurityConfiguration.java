@@ -1,6 +1,6 @@
 package com.epam.bank.operatorinterface.configuration;
 
-import com.epam.bank.operatorinterface.service.UserService;
+import com.epam.bank.operatorinterface.service.UserDetailsServiceImpl;
 import javax.servlet.Filter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,13 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private UserService userService;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
     private Filter jwtRequestFilter;
 
     //set up credentials source for authentication
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService);
+        auth.userDetailsService(userDetailsServiceImpl);
     }
 
     //set up authorisation
@@ -52,6 +52,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     //create bean of authentication manager
+    //application failing to start if this bean is removed
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

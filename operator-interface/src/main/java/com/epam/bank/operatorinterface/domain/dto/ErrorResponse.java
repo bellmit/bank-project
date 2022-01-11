@@ -7,10 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class ErrorResponse {
     private final String type;
-    private final int status;
 
-    public ErrorResponse(@NonNull String type, @NonNull HttpStatus status) {
+    public ErrorResponse(@NonNull String type) {
         this.type = type;
-        this.status = status.value();
     }
 }

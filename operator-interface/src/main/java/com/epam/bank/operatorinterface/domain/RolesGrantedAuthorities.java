@@ -1,16 +1,13 @@
 package com.epam.bank.operatorinterface.domain;
 
-import com.epam.bank.operatorinterface.entity.Role;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 
-public class RolesGrantedAuthorities extends Role implements GrantedAuthority {
+@Getter
+@AllArgsConstructor
+public class RolesGrantedAuthorities implements GrantedAuthority {
 
-    public RolesGrantedAuthorities(Long id, String authorities) {
-        super(id, authorities);
-    }
+    private final String authority;
 
-    @Override
-    public String getAuthority() {
-        return super.getRole();
-    }
 }

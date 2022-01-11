@@ -82,8 +82,7 @@ public class User {
         @NonNull String phoneNumber,
         @NonNull String username,
         @NonNull String email,
-        @NonNull String password,
-        Account.Factory accountFactory
+        @NonNull String password
     ) {
         this.name = name;
         this.surname = surname;
@@ -91,7 +90,7 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.accounts.add(accountFactory.createFor(this));
+        this.accounts.add(Account.builder().user(this).build());
     }
 
     public User(Long id, String name, String surname, String phoneNumber, String email,
